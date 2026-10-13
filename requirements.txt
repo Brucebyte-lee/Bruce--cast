@@ -1,0 +1,9 @@
+# Runtime dependencies (exact versions this project was built and tested with)
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+pydantic-settings==2.15.0
+httpx==0.28.1
+SQLAlchemy==2.1.4
+alembic==1.20.0
+psycopg[binary]==3.3.6   # PostgreSQL driver (used in production)
+tzdata==2026.5           # timezone database; required on Windows for zoneinfo

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bruce Lee Cast: weather forecast</title>
+  <meta name="description" content="Current weather, hourly and 7-day forecasts with real Open-Meteo data.">
+  <meta name="theme-color" content="#0f4c92">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body data-sky="clear">
+  <a class="skip-link" href="#main">Skip to weather</a>
+
+  <header class="topbar">
+    <h1 class="brand">Bruce Lee Cast</h1>
+
+    <form class="search" role="search" id="search-form" autocomplete="off">
+      <label for="search-input" class="sr-only">Search for a city</label>
+      <div class="search-box">
+        <input id="search-input" type="search" placeholder="Search a city, e.g. Nairobi, Kenya" maxlength="100"
+               role="combobox" aria-expanded="false" aria-controls="search-results" aria-autocomplete="list" enterkeyhint="search">
+        <ul id="search-results" class="search-results" role="listbox" aria-label="Matching places" hidden></ul>
+      </div>
+      <button type="button" id="geo-button" class="btn">Use my location</button>
+    </form>
+
+    <div class="controls" role="group" aria-label="Display units">
+      <div class="segmented" role="radiogroup" aria-label="Temperature unit">
+        <button type="button" role="radio" data-pref="temperature_unit" data-value="celsius">°C</button>
+        <button type="button" role="radio" data-pref="temperature_unit" data-value="fahrenheit">°F</button>
+      </div>
+      <div class="segmented" role="radiogroup" aria-label="Measurement system">
+        <button type="button" role="radio" data-pref="unit_system" data-value="metric">Metric</button>
+        <button type="button" role="radio" data-pref="unit_system" data-value="imperial">Imperial</button>
+      </div>
+      <div class="segmented" role="radiogroup" aria-label="Appearance">
+        <button type="button" role="radio" data-pref="theme" data-value="system">Auto</button>
+        <button type="button" role="radio" data-pref="theme" data-value="light">Day</button>
+        <button type="button" role="radio" data-pref="theme" data-value="dark">Night</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="status" class="sr-only" role="status" aria-live="polite"></div>
+
+  <div class="layout">
+    <main id="main" tabindex="-1">
+      <section id="empty" class="panel empty">
+        <h2>Where do you want the forecast for?</h2>
+        <p>Search for a city above, or share your location when you choose to. Your location is never required.</p>
+      </section>
+
+      <section id="skeleton" class="skeleton" aria-hidden="true" hidden>
+        <div class="sk sk-hero"></div><div class="sk sk-row"></div><div class="sk sk-row"></div>
+      </section>
+
+      <section id="error" class="panel error" role="alert" hidden>
+        <h2 id="error-title">We couldn't load the weather</h2>
+        <p id="error-message"></p>
+        <button type="button" id="retry-button" class="btn btn-solid">Try again</button>
+      </section>
+
+      <div id="weather" hidden>
+        <section class="panel hero" aria-labelledby="place-name">
+          <div class="hero-top">
+            <div>
+              <h2 id="place-name" class="place"></h2>
+              <p id="place-sub" class="muted"></p>
+            </div>
+            <button type="button" id="fav-button" class="btn" aria-pressed="false">Save location</button>
+          </div>
+          <div class="hero-main">
+            <span id="hero-icon" class="hero-icon"></span>
+            <div>
+              <p class="temp"><span id="temp-value"></span><span id="temp-unit" class="temp-unit"></span></p>
+              <p id="condition" class="condition"></p>
+            </div>
+          </div>
+          <p class="hero-range muted"><span id="feels-like"></span> <span id="range"></span></p>
+          <p class="badge-row"><span class="badge">Current conditions</span><span id="stale-badge" class="badge badge-warn" hidden>Older data</span></p>
+          <p id="observed" class="muted small"></p>
+        </section>
+
+        <section class="details" aria-label="Current measurements" id="details"></section>
+
+        <section class="panel" aria-labelledby="insights-title">
+          <h2 id="insights-title">Insights</h2>
+          <ul id="insights" class="insights"></ul>
+          <p id="alerts" class="muted small"></p>
+        </section>
+
+        <section class="panel" aria-labelledby="hourly-title">
+          <h2 id="hourly-title">Next 24 hours <span class="badge">Forecast</span></h2>
+          <div class="hourly" role="region" aria-label="Hourly forecast. Scroll sideways with the arrow keys." tabindex="0">
+            <ol id="hourly-list"></ol>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="daily-title">
+          <h2 id="daily-title">7-day forecast <span class="badge">Forecast</span></h2>
+          <ul id="daily-list" class="daily"></ul>
+        </section>
+      </div>
+    </main>
+
+    <aside class="side" aria-label="Saved locations and comparison">
+      <section class="panel" aria-labelledby="fav-title">
+        <h2 id="fav-title">Favorites</h2>
+        <p id="fav-empty" class="muted small">Saved cities appear here. Search for a city, then choose Save location.</p>
+        <ul id="fav-list" class="fav-list"></ul>
+        <p id="fav-message" class="small" role="status"></p>
+        <button type="button" id="compare-button" class="btn" disabled>Compare selected cities</button>
+        <p class="muted small">Tick 2 to 5 favorites to compare them.</p>
+      </section>
+      <section class="panel" id="compare-panel" aria-labelledby="compare-title" hidden>
+        <h2 id="compare-title">Comparison</h2>
+        <div class="table-wrap" tabindex="0" role="region" aria-label="Comparison table, scrollable">
+          <table id="compare-table"></table>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="footer">
+    <p>Weather data by <a href="https://open-meteo.com/" rel="noopener noreferrer">Open-Meteo.com</a>
+      (<a href="https://creativecommons.org/licenses/by/4.0/" rel="noopener noreferrer">CC BY 4.0</a>).
+      <span id="updated"></span></p>
+  </footer>
+</body>
+</html>

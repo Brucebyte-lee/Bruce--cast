@@ -1,0 +1,18 @@
+[project]
+name = "skycast"
+version = "1.0.0"
+description = "Weather forecasting app: FastAPI + Open-Meteo"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501", "B008"]
+
+[tool.pytest.ini_options]
+testpaths = ["app/tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
